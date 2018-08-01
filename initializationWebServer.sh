@@ -58,6 +58,7 @@ function requestCreateDirectories {
         mkdir sites
         mkdir mail
         mkdir bashScripts;
+        mkdir logs;
     else
         echo -en "${UNDERLINE}Данного пользователя не существует${F_NORMAL}\n"
         requestCreateDirectories;
