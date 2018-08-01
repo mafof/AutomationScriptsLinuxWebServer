@@ -9,6 +9,7 @@ F_NORMAL='\033[0m'
 tput sgr0 
 
 arrayDontInstallPackage=()
+selectedUser="0"
 
 # Проверяет установлены ли необходимые пакеты (LAMP)
 function checkInstallPackage {
@@ -31,7 +32,9 @@ function installPackageOutList {
 }
 
 # Функция проверяющая существует ли пользователь(его домашняя папка)
-function checkUser { [ -d /home/$1 ] }
+function checkUser {
+    [ -d /home/$1 ] 
+}
 
 # Запрос об обновление пакетов
 function requestUpdatePackage {
@@ -50,10 +53,11 @@ function requestCreateDirectories {
     read user
     if checkUser $user;
     then
+        selectedUser=$user
         echo -en "${UNDERLINE}Создание папок...${F_NORMAL}"
         mkdir sites
         mkdir mail
-        mkdir scripts;
+        mkdir bashScripts;
     else
         echo -en "${UNDERLINE}Данного пользователя не существует${F_NORMAL}\n"
         requestCreateDirectories;
@@ -75,6 +79,7 @@ function requestInstallPackage {
     checkInstallPackage mysql-server
     checkInstallPackage mysql-client
     checkInstallPackage mysql-common
+    checkInstallPackage unzip
 
     # Проверка установлены ли все пакеты
     if [[ ${#arrayDontInstallPackage[*]} != 0 ]]
@@ -91,12 +96,35 @@ function requestInstallPackage {
     fi
 }
 
+function getScripts {
+    if [[ $selectedUser != "0" ]]
+    then
+        if [[ -d /home/$selectedUser/bashScripts ]]
+        then
+            echo -en "\n${UNDERLINE}Скачивание архива...${F_NORMAL}"
+            cd /home/$selectedUser/bashScripts
+            wget https://github.com/mafof/AutomationScriptsLinuxWebServer/archive/master.zip . 2>/dev/null
+            unzip -qq -u -j master.zip
+            rm  README.md
+            rm master.zip
+            echo -en "${GREEN}[OK]${NORMAL}"
+        fi
+    else
+        echo -en "\n${UNDERLINE}Введите имя пользователя:${F_NORMAL}"
+        read user
+        if checkUser $user;
+        then
+            getScripts
+        fi
+    fi
+}
+
 # Главный метод
 function main {
-    requestUpdatePackage # Обновление пакетов (1 шаг)
-    requestCreateDirectories # Создавать ли окружение(папки) (2 шаг)
-    requestInstallPackage # Проверка установки нужных пакетов (3 шаг)
-    # Установка пакета git с клонированием репозитория с конфигами(либо через wget) (4 шаг)
-    echo -en "${UNDERLINE}Скрипт отработал успешно, для добовление сайтов воспользуйтесь файлом `createSite.sh` в директории ${F_NORMAL}"
+    requestUpdatePackage # Обновление пакетов
+    requestCreateDirectories # Создавать ли окружение(папки)
+    requestInstallPackage # Проверка установки нужных пакетов
+    getScripts # Скачивание всех скриптов и перемещение их в папку bashScripts
+    echo -en "\n${UNDERLINE}Скрипт отработал успешно, для добовление сайтов воспользуйтесь файлом createSite.sh в директории /home/$selectedUser/bashScripts ${F_NORMAL}\n"
 }
 main
