@@ -115,6 +115,9 @@ function getScripts {
         if checkUser $user;
         then
             getScripts
+        else
+            echo -en "\n${RED}Неправильное имя пользователя${NORMAL}"
+            getScripts
         fi
     fi
 }
