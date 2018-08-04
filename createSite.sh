@@ -48,6 +48,7 @@ END
     elif [[ $SELECT_SERVER == "nginx" ]]
     then
         echo -en "${RED}Поддержка создания конфигурационного файла для nginx в разработке${NORMAL}"
+        # Добавить откат действий
         exit
     fi
 }
@@ -89,10 +90,15 @@ function createSite {
     elif [[ $SELECT_SERVER == "nginx" ]]
     then
         echo -en "${RED}Поддержка создания конфигурационного файла для nginx в разработке${NORMAL}"
+        # Добавить откат действий
         exit
     fi
     appendDomenToHostsFile
 
+}
+
+function removeSite {
+    echo -en ""   
 }
 
 function editSite {
