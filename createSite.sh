@@ -44,8 +44,8 @@ function createConfig {
 END
     );
     
-        sudo echo "$CONFIGAPACHE" >> "${PATH_APACHE[0]}/$NAME_SITE.conf"
-        sudo a2ensite "$NAME_SITE.conf"
+        echo "$CONFIGAPACHE" >> "${PATH_APACHE[0]}/$NAME_SITE.conf"
+        a2ensite "$NAME_SITE.conf"
     
     elif [[ $SELECT_SERVER == "nginx" ]]
     then
@@ -72,9 +72,9 @@ function createSite {
     PATH_DIRECTORY="/home/$SELECT_USER/sites/$NAME_SITE"
     mkdir /home/$SELECT_USER/sites/$NAME_SITE
     mkdir /home/$SELECT_USER/logs/$NAME_SITE
-    sudo echo "<html><head><title>Test page</title></head><body>Page for check running site</body></html>" >> "/home/$SELECT_USER/sites/$NAME_SITE/index.html"
-    sudo chmod -R 777 /home/$SELECT_USER/sites/$NAME_SITE
-    sudo chmod -R 777 /home/$SELECT_USER/logs/$NAME_SITE
+    echo "<html><head><title>Test page</title></head><body>Page for check running site</body></html>" >> "/home/$SELECT_USER/sites/$NAME_SITE/index.html"
+    chmod -R 777 /home/$SELECT_USER/sites/$NAME_SITE
+    chmod -R 777 /home/$SELECT_USER/logs/$NAME_SITE
     echo -en "${GREEN}[OK]${NORMAL}\n"
 
     echo -en "${UNDERLINE}Создание конфигурационного файла...${F_NORMAL}"
@@ -103,21 +103,21 @@ function removeConfiguration {
     then
         echo -en "\n${UNDERLINE}Файл конфигурации отсутствует...${F_NORMAL}"
     else
-        sudo a2dissite $SELECT_SITE.conf
-        sudo rm /etc/apache2/sites-available/$SELECT_SITE.conf
+        a2dissite $SELECT_SITE.conf
+        rm /etc/apache2/sites-available/$SELECT_SITE.conf
     fi
 }
 
 # Удаление директории
 function removeDirectory {
-    sudo rm -r /home/$SELECT_USER/sites/$SELECT_SITE
-    sudo rm -r /home/$SELECT_USER/logs/$SELECT_SITE
+    rm -r /home/$SELECT_USER/sites/$SELECT_SITE
+    rm -r /home/$SELECT_USER/logs/$SELECT_SITE
 }
 
 function removeSite {
     removeConfiguration # Удаляем конфигурации
     removeDirectory # Удаляем директории
-    sudo systemctl reload apache2
+    systemctl reload apache2
 }
 
 function editSite {
